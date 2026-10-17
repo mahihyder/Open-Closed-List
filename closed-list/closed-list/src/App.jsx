@@ -18,7 +18,23 @@ const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 export default function App() {
   const [state, setState] = useState(load);
   const [text, setText] = useState("");
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("closed-list:theme") || "light";
+    } catch {
+      return "light";
+    }
+  });
   const { open, closed, done } = state;
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem("closed-list:theme", theme);
+    } catch {
+      /* storage unavailable: keep the selected theme for this session */
+    }
+  }, [theme]);
   const full = closed.length >= LIMIT;
 
   useEffect(() => {
@@ -62,9 +78,29 @@ export default function App() {
   return (
     <main className="app">
       <header className="head">
-        <h1>Tudu list</h1>
+        <div className="head-row">
+          <h1>Tudu list</h1>
+          <button
+            className="btn theme-toggle"
+            type="button"
+            onClick={() => setTheme((current) => (current === "light" ? "dark" : "light"))}
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+            title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+          >
+            {theme === "light" ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.9 13A8.5 8.5 0 0 1 11 3.1 8.5 8.5 0 1 0 20.9 13Z" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+              </svg>
+            )}
+          </button>
+        </div>
         <p className="lede">
-          Everything you want to do goes on the open list. Only five things get to
+          Everything you wish to do goes on the open list. Only five things get to
           be on the closed list, and nothing new gets in until something
           leaves.
         </p>
