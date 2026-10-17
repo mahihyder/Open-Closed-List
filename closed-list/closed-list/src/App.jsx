@@ -25,7 +25,7 @@ export default function App() {
       return "light";
     }
   });
-  const { open, closed, done } = state;
+  const { open, closed } = state;
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
