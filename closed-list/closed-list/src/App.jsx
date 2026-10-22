@@ -79,7 +79,7 @@ export default function App() {
     <main className="app">
       <header className="head">
         <div className="head-row">
-          <h1>Tudu list</h1>
+          <h1>InProgress</h1>
           <button
             className="btn theme-toggle"
             type="button"
