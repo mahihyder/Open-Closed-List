@@ -221,3 +221,12 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 /* Raise only the Closed list so it shares the initial viewport with the calendar. */
 .col[aria-labelledby="closed-h"] { position: relative; top: -145px; z-index: 1; }
 @media (max-width: 720px) { .col[aria-labelledby="closed-h"] { top: 0; } }
+
+/* Tighten the Closed list spacing and style calendar deadline selection. */
+.col[aria-labelledby="closed-h"] { top: -160px; }
+.calendar-prompt { margin: -6px 0 12px; color: var(--open); font-size: .82rem; font-weight: 600; }
+.day.picking { border-color: var(--teal); cursor: pointer; }
+.timer-control { display: flex; align-items: center; gap: 5px; }
+.timer-entry { flex-wrap: nowrap; }
+.deadline-picker { white-space: nowrap; }
+@media (max-width: 720px) { .col[aria-labelledby="closed-h"] { top: 0; } }
