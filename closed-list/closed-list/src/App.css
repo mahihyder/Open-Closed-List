@@ -230,3 +230,40 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 .timer-entry { flex-wrap: nowrap; }
 .deadline-picker { white-space: nowrap; }
 @media (max-width: 720px) { .col[aria-labelledby="closed-h"] { top: 0; } }
+
+/* Keep each side of the dashboard on its own vertical rhythm. */
+.app {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 48px;
+  align-items: start;
+}
+.left-column,
+.right-column {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+}
+.left-column { gap: 30px; }
+.right-column { gap: 32px; }
+.left-column > .head,
+.left-column > .meter,
+.left-column > .closed-column,
+.right-column > .calendar,
+.right-column > .open-column {
+  grid-column: 1;
+  grid-row: auto;
+}
+.left-column > .meter,
+.right-column > .calendar { margin: 0; }
+.left-column > .closed-column { position: static; top: auto; z-index: auto; }
+.right-column > .open-column { padding-top: 0; }
+@media (max-width: 720px) {
+  .app { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+  .left-column,
+  .right-column { display: contents; }
+  .head { grid-column: 1; grid-row: 1; }
+  .calendar { grid-column: 1; grid-row: 2; margin: 30px 0; }
+  .meter { grid-column: 1; grid-row: 3; }
+  .closed-column { grid-column: 1; grid-row: 4; }
+  .open-column { grid-column: 1; grid-row: 5; padding-top: 0; }
+}
