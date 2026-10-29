@@ -295,3 +295,10 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 @media (max-width: 720px) {
   .left-column, .right-column { display: contents !important; }
 }
+
+/* Match the right panels to the full column width. */
+.right-column > .calendar,
+.right-column > .open-column {
+  align-self: stretch;
+  width: 100%;
+}
