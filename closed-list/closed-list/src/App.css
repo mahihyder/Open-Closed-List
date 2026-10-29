@@ -282,3 +282,16 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   .left-column,
   .right-column { display: contents; }
 }
+
+/* Hard reset legacy grid placement inside the new column wrappers. */
+.left-column { display: flex !important; flex-direction: column; gap: 28px !important; }
+.right-column { display: flex !important; flex-direction: column; gap: 32px !important; }
+.left-column > *,
+.right-column > * { grid-column: auto !important; grid-row: auto !important; }
+.left-column > .meter { margin: 0 !important; }
+.left-column > .closed-column { position: static !important; margin: 0 !important; }
+.right-column > .calendar { margin: 0 !important; }
+.right-column > .open-column { padding-top: 0 !important; }
+@media (max-width: 720px) {
+  .left-column, .right-column { display: contents !important; }
+}
