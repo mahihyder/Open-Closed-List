@@ -217,3 +217,7 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   .col[aria-labelledby="closed-h"] { grid-row: 4; }
   .col[aria-labelledby="open-h"] { grid-row: 5; padding-top: 0; }
 }
+
+/* Raise only the Closed list so it shares the initial viewport with the calendar. */
+.col[aria-labelledby="closed-h"] { position: relative; top: -145px; z-index: 1; }
+@media (max-width: 720px) { .col[aria-labelledby="closed-h"] { top: 0; } }
