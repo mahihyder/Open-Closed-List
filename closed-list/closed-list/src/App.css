@@ -267,3 +267,18 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   .closed-column { grid-column: 1; grid-row: 4; }
   .open-column { grid-column: 1; grid-row: 5; padding-top: 0; }
 }
+
+/* Let the stacked columns size naturally instead of honoring the old grid row numbers. */
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+.left-column { gap: 36px; }
+.right-column { gap: 32px; }
+.left-column > .meter { margin: 0; }
+.left-column > .closed-column { margin-top: 0; }
+@media (max-width: 720px) {
+  .left-column,
+  .right-column { display: contents; }
+}
