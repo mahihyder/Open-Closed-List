@@ -285,7 +285,7 @@ export default function App() {
   </main>
     {undoAction && <div className="undo-toast" role="status"><span>{undoAction.message}</span><button className="btn" onClick={undoLastAction}>Undo</button><button className="btn ghost" aria-label="Dismiss notification" onClick={() => setUndoAction(null)}>×</button></div>}
     {dateHover && dateHoverReady && <div ref={tooltipRef} id="date-tasks-tooltip" className="date-tooltip" role="tooltip" style={{ left: 0, top: 0 }}>
-      <strong>{dateHover.label}</strong>
+
       {taskDueOn(dateHover.key).length ? <ul>{taskDueOn(dateHover.key).map((task) => <li key={task.id}>{task.text}</li>)}</ul> : <p>No tasks due</p>}
     </div>}
   </>;

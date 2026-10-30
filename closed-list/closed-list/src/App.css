@@ -243,7 +243,7 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 .calendar-count { flex-shrink: 0; }
 .calendar-grid { gap: 7px; }
 .date-grid { grid-auto-rows: auto; }
-.day, .calendar-spacer { aspect-ratio: auto; height: clamp(42px, 3.4vw, 48px); }
+.day, .calendar-spacer { aspect-ratio: auto; height: clamp(46px, 3.7vw, 52px); }
 .calendar-legend { margin-top: 12px; }
 .calendar-prompt { margin: 0 0 16px; color: var(--open); font-size: .88rem; }
 .day.picking { border-color: var(--teal); }
@@ -261,7 +261,7 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   .calendar { order: 3; margin: 0; }
   .open-column { order: 4; padding-top: 0; }
   .head h1 { font-size: 2.5rem; }
-  .day, .calendar-spacer { height: clamp(42px, 10vw, 50px); }
+  .day, .calendar-spacer { height: clamp(46px, 11vw, 54px); }
 }
 /* Slightly zoom out the complete desktop dashboard. */
 @media (min-width: 761px) {
@@ -404,3 +404,4 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   transform: none;
 }
 .drag-overlay, .drag-overlay .item { transition: none !important; animation: none !important; }
+.date-tooltip > ul:first-child { margin-top: 0; }
