@@ -50,8 +50,9 @@ export default function App() {
   const finish = (id) => setState((s) => ({ ...s, closed: s.closed.filter((i) => i.id !== id), done: s.done + 1 }));
   const letGo = (list, id) => setState((s) => ({ ...s, [list]: s[list].filter((i) => i.id !== id) }));
   const timerControl = (item) => <div className="timer-control" key={item.id}>
-    <button type="button" className="btn" title="Choose a deadline from the calendar" aria-label={(item.dueAt ? "Change" : "Set") + " deadline for " + item.text} onClick={() => setDeadlineTarget((current) => current?.type === "task" && current.id === item.id ? null : { type: "task", id: item.id, text: item.text })}>Timer</button>
-    {item.dueAt && <button type="button" className="btn ghost" aria-label={"Clear deadline for " + item.text} onClick={() => setTaskDeadline(item.id, null)}>Clear</button>}
+    {item.dueAt
+      ? <button type="button" className="btn ghost" aria-label={"Clear deadline for " + item.text} onClick={() => setTaskDeadline(item.id, null)}>Clear</button>
+      : <button type="button" className="btn" title="Choose a deadline from the calendar" aria-label={"Set deadline for " + item.text} onClick={() => setDeadlineTarget((current) => current?.type === "task" && current.id === item.id ? null : { type: "task", id: item.id, text: item.text })}>Timer</button>}
   </div>;
   const taskItems = (items, type) => items.map((item) => <li key={item.id} className={type === "closed" ? "item closed" : "item"}>
     <span className="txt">{item.text}{countdown(item) !== null && <small className="countdown">{countdownLabel(item)}</small>}</span>
