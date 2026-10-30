@@ -436,3 +436,11 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 .alarm-button.is-set .clock-cross { opacity: 1; }
 .alarm-button.is-set .clock-cross path { stroke: #75818a; stroke-width: 1.7; opacity: .65; }
 .item > .timer-control { margin-right: 4px; }
+
+/* A gentle, steady entrance for Undo notifications. */
+.undo-toast { animation: undo-appear 220ms cubic-bezier(.2,.7,.3,1) both; }
+@keyframes undo-appear {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .undo-toast { animation: none; } }
