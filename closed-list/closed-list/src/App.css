@@ -326,7 +326,8 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 .date-tooltip {
   position: fixed;
   z-index: 100;
-  width: min(300px, calc(100vw - 24px));
+  width: max-content;
+  max-width: min(300px, calc(100vw - 24px));
   max-height: 45vh;
   overflow-y: auto;
   pointer-events: none;
@@ -348,3 +349,58 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 
 .date-dots { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 3px; }
 .day .date-dots i { position: static; display: block; width: 4px; height: 4px; }
+/* Reorder task cards without changing their layout. */
+.item[draggable] { cursor: grab; position: relative; }
+.item[draggable]:active { cursor: grabbing; }
+.item[data-dragging] { visibility: hidden; }
+.item[data-drop="before"] { box-shadow: 0 -3px 0 var(--teal); }
+.item[data-drop="after"] { box-shadow: 0 3px 0 var(--teal); }
+.item[draggable] .btn { cursor: pointer; }
+.item[data-task-id] { cursor: default; touch-action: pan-x; }
+.task-drag-active, .task-drag-active * { cursor: grabbing !important; user-select: none; }
+.drag-overlay { position: fixed; z-index: 1000; pointer-events: none; transform-origin: top left; }
+.drag-overlay .item { opacity: 1; visibility: visible; transition: none; transform: none; box-shadow: 0 14px 32px rgba(0,0,0,.28); }
+.drag-overlay .item .txt { flex-basis: 160px; }
+@media (max-width: 1000px) { .drag-overlay .item .txt { flex-basis: 100%; } }
+.btn.theme-toggle { padding: 0; display: grid; place-items: center; }
+.btn.theme-toggle svg { width: 20px; height: 20px; }
+
+/* A warmer sage-gold warning accent for light surfaces only. */
+:root:not([data-theme="dark"]) .col .item.deadline-soon {
+  border-left-color: #a29b50;
+  --deadline-glow: #b4ad67;
+}
+/* Quiet priority headings stay attached to the first task in each group. */
+.item:has(> .priority-label) { margin-top: 24px; }
+.priority-label { position: absolute; top: -24px; left: 0; color: var(--muted); font-size: .7rem; font-weight: 600; letter-spacing: .06em; }
+.drag-overlay .priority-label { display: none; }
+.task-title { overflow-wrap: anywhere; }
+.item .txt.has-timer { display: flex; flex-direction: column; align-items: flex-start; }
+.item .txt:not(.has-timer) { flex-direction: column; align-items: stretch; justify-content: center; }
+.task-edit { width: 100%; padding: 3px 6px; }
+.undo-toast { position: fixed; z-index: 1100; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; max-width: calc(100vw - 32px); padding: 12px 16px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.22); }
+.undo-toast > .btn:not(.ghost) { color: var(--open); }
+.month-marker { position: absolute; top: 2px; left: 5px; color: var(--muted); font-size: .55rem; font-weight: 600; }
+.day:has(.month-marker) > span:first-child { transform: translateY(2px); }
+.item[data-task-id] { transition: translate 180ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+
+/* The held card tracks the pointer immediately; only displaced rows slide. */
+.drag-overlay .item { transition: none !important; animation: none !important; translate: none !important; }
+.item[data-dragging] { transition: none; }
+
+/* No bounce or vertical lift on task cards. */
+.item:hover, .item:active { transform: none; }
+.item[data-task-id] { transition: translate 140ms linear, border-color 160ms ease, box-shadow 160ms ease; }
+.drag-overlay, .drag-overlay .item { animation: none !important; }
+/* Group labels are list headings, independent of movable task cards. */
+.priority-heading { color: var(--muted); font-size: .7rem; font-weight: 600; letter-spacing: .06em; padding: 2px 0 0; margin-top: 8px; line-height: 1.5; }
+.priority-heading:first-child { margin-top: 0; }
+/* Reordering is immediate, with no movement interpolation or bounce. */
+.item[data-task-id],
+.item[data-task-id]:hover,
+.item[data-task-id]:active {
+  transition: border-color 160ms linear, box-shadow 160ms linear;
+  animation: none;
+  transform: none;
+}
+.drag-overlay, .drag-overlay .item { transition: none !important; animation: none !important; }
