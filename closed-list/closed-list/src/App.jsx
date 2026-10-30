@@ -18,6 +18,14 @@ export default function App() {
   const [deadlineTarget, setDeadlineTarget] = useState(null);
   const [today, setToday] = useState(() => new Date());
   const [selectedDay, setSelectedDay] = useState(null);
+  useEffect(() => {
+    if (!selectedDay) return;
+    const clearDateSelection = (event) => {
+      if (!event.target.closest(".calendar")) setSelectedDay(null);
+    };
+    document.addEventListener("pointerdown", clearDateSelection);
+    return () => document.removeEventListener("pointerdown", clearDateSelection);
+  }, [selectedDay]);
   const [dateHover, setDateHover] = useState(null);
   const [dateHoverReady, setDateHoverReady] = useState(false);
   const tooltipRef = useRef(null);
@@ -236,12 +244,12 @@ export default function App() {
     const value = editText.trim();
     if (value) setState((s) => ({ ...s, open: s.open.map((task) => task.id === id ? { ...task, text: value } : task), closed: s.closed.map((task) => task.id === id ? { ...task, text: value } : task) }));
     setEditing(null);
-  };  const timerControl = (item) => <div className="timer-control" key={item.id}>
+  };  const alarmIcon = (set) => <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3.5 2" /><circle cx="12" cy="12" r=".65" fill="currentColor" stroke="none" />{set && <g className="clock-cross"><path d="M7 17 17 7" /></g>}</svg>;
+  const timerControl = (item, type) => <div className="timer-control" key={item.id}>
     {item.dueAt
-      ? <button type="button" className="btn ghost" aria-label={"Clear deadline for " + item.text} onClick={() => setTaskDeadline(item.id, null)}>Clear</button>
-      : <button type="button" className="btn" title="Choose a deadline from the calendar" aria-label={"Set deadline for " + item.text} onClick={() => setDeadlineTarget((current) => current?.type === "task" && current.id === item.id ? null : { type: "task", id: item.id, text: item.text })}>Timer</button>}
-  </div>;
-  const taskItems = (items, type) => items.map((item, index) => <Fragment key={item.id}><li key={item.id}
+      ? <button type="button" className="btn alarm-button is-set" title="Clear timer" aria-label={"Clear deadline for " + item.text} onClick={() => setTaskDeadline(item.id, null)}>{alarmIcon(true)}</button>
+      : <button type="button" className="btn alarm-button" title="Choose a deadline from the calendar" aria-label={"Set deadline for " + item.text} onClick={() => setDeadlineTarget((current) => current?.type === "task" && current.id === item.id ? null : { type: "task", id: item.id, text: item.text })}>{alarmIcon(false)}</button>}
+  </div>;  const taskItems = (items, type) => items.map((item, index) => <Fragment key={item.id}><li key={item.id}
     data-task-id={item.id}
     data-priority={priority(item)}
     tabIndex={0}
@@ -266,9 +274,9 @@ export default function App() {
     className={(type === "closed" ? "item closed" : "item") + (countdown(item) === null ? "" : countdown(item) <= 1 ? " deadline-urgent" : countdown(item) === 2 ? " deadline-soon" : "")}>
 
     <span className={"txt" + (item.dueAt ? " has-timer" : "")}>{editing === item.id ? <input className="task-edit" autoFocus aria-label="Edit task title" value={editText} onChange={(event) => setEditText(event.target.value)} onBlur={() => saveEdit(item.id)} onKeyDown={(event) => { event.stopPropagation(); if (event.key === "Enter") { event.preventDefault(); saveEdit(item.id); } if (event.key === "Escape") { cancelEdit.current = true; setEditing(null); } }} /> : <span className="task-title" title="Double-click to edit" onDoubleClick={() => { cancelEdit.current = false; setEditText(item.text); setEditing(item.id); }}>{item.text}</span>}{countdown(item) !== null && <small className="countdown">{countdownLabel(item)}</small>}</span>
-    {type !== "closed" && timerControl(item)}
+    {timerControl(item, type)}
     {type === "closed" ? <button className="btn primary" onClick={() => finish(item.id)}>Finish</button> : <button className="btn" disabled={full} title={full ? "Closed list is full" : "Move to closed list"} onClick={() => commit(item.id)}>Commit</button>}
-    {type === "closed" && timerControl(item)}
+
     <button className="btn ghost" onClick={() => letGo(type, item.id)} title={type === "closed" ? "Return to Open list" : "Remove task"} aria-label={"Let go of " + item.text}>Let go</button>
   </li></Fragment>);
 

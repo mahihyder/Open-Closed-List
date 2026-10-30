@@ -405,3 +405,33 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 }
 .drag-overlay, .drag-overlay .item { transition: none !important; animation: none !important; }
 .date-tooltip > ul:first-child { margin-top: 0; }
+
+/* Compact rounded alarm control in the Closed list. */
+.item .timer-control .alarm-button { display: grid; place-items: center; width: 34px; height: 34px; padding: 6px; border-radius: 10px; color: var(--open); }
+.alarm-button svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.item .timer-control .alarm-button.is-set { color: var(--muted); opacity: .6; }
+.item .timer-control .alarm-button.is-set:hover, .item .timer-control .alarm-button.is-set:focus-visible { opacity: 1; }
+.alarm-cross { paint-order: stroke; }
+.alarm-cross path { stroke: var(--muted); stroke-width: 2; }
+/* Minimal clock badge, matching the Open list count. */
+.item .timer-control .alarm-button {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.alarm-button svg { width: 20px; height: 20px; stroke-width: 1.5; overflow: visible; }
+.clock-cross { stroke-width: 1.5; }
+/* A distinct clock face with clear hands at small sizes. */
+.item .timer-control .alarm-button { width: 30px; height: 30px; padding: 2px; border-color: transparent; background: transparent; }
+.item .timer-control .alarm-button svg { width: 24px; height: 24px; stroke-width: 1.7; }
+.item .timer-control .alarm-button:not(.is-set) { color: var(--ink); }
+/* Keep the clock subdued while making the clear-timer cross unmistakable. */
+.item .timer-control .alarm-button.is-set { opacity: 1; }
+.alarm-button.is-set svg > circle,
+.alarm-button.is-set svg > path { opacity: .4; }
+.alarm-button.is-set .clock-cross { opacity: 1; }
+.alarm-button.is-set .clock-cross path { stroke: #75818a; stroke-width: 1.7; opacity: .65; }
