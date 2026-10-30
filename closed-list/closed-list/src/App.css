@@ -45,11 +45,11 @@ body {
 .app {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: 48px;
+  column-gap: 56px;
   align-items: start;
-  max-width: 1020px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 48px 20px 80px;
+  padding: 36px 40px 64px;
 }
 
 .head {
@@ -62,7 +62,7 @@ body {
 .head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .head-row h1 { margin-bottom: 0; }
 .theme-toggle { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; padding: 7px; line-height: 0; }
-.theme-toggle svg { display: block; transform: translateX(-5px); width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-toggle svg { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .head h1 {
   font-family: "Manrope", sans-serif;
   font-size: 3rem;
@@ -80,12 +80,12 @@ body {
   border-top: 1px solid var(--line);
   animation: arrive 450ms 80ms ease-out both;
 }
-.slots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; max-width: 460px; }
-.slot { height: 12px; background: var(--line); border-radius: 2px; transition: background 0.2s, transform 0.2s; }
+.slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: 100%; max-width: 260px; }
+.slot { height: 14px; background: var(--line); border-radius: 5px; transition: background 0.2s, transform 0.2s; }
 .slot.on {
   background: var(--teal);
   border-color: var(--teal);
-  box-shadow: inset 0 0 0 1px rgba(21, 59, 57, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(21, 59, 57, 0.12), 0 0 10px color-mix(in srgb, var(--teal) 30%, transparent);
 }
 .status { margin: 10px 0 0; color: var(--muted); font-size: 0.92rem; }
 .status.full { color: var(--amber); font-weight: 500; }
@@ -122,14 +122,14 @@ body {
 }
 .col h2::before { width: 9px; height: 9px; content: ""; background: var(--teal); border-radius: 2px; }
 .col[aria-labelledby="open-h"] h2::before { background: var(--teal); }
-.col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 
 .item {
   display: flex; align-items: center; gap: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 11px 12px;
+  border-radius: 10px;
+  padding: 12px 16px;
   box-shadow: 0 2px 8px rgba(22, 48, 42, 0.045);
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
@@ -218,87 +218,133 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   .col[aria-labelledby="open-h"] { grid-row: 5; padding-top: 0; }
 }
 
-/* Raise only the Closed list so it shares the initial viewport with the calendar. */
-.col[aria-labelledby="closed-h"] { position: relative; top: -145px; z-index: 1; }
-@media (max-width: 720px) { .col[aria-labelledby="closed-h"] { top: 0; } }
-
-/* Tighten the Closed list spacing and style calendar deadline selection. */
-.col[aria-labelledby="closed-h"] { top: -160px; }
-.calendar-prompt { margin: -6px 0 12px; color: var(--open); font-size: .82rem; font-weight: 600; }
-.day.picking { border-color: var(--teal); cursor: pointer; }
-.timer-control { display: flex; align-items: center; gap: 5px; }
-.timer-entry { flex-wrap: nowrap; }
-.deadline-picker { white-space: nowrap; }
-@media (max-width: 720px) { .col[aria-labelledby="closed-h"] { top: 0; } }
-
-/* Keep each side of the dashboard on its own vertical rhythm. */
-.app {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: 48px;
-  align-items: start;
-}
-.left-column,
-.right-column {
-  min-width: 0;
-  display: grid;
-  align-content: start;
-}
-.left-column { gap: 30px; }
-.right-column { gap: 32px; }
-.left-column > .head,
-.left-column > .meter,
-.left-column > .closed-column,
-.right-column > .calendar,
-.right-column > .open-column {
-  grid-column: 1;
-  grid-row: auto;
-}
-.left-column > .meter,
-.right-column > .calendar { margin: 0; }
-.left-column > .closed-column { position: static; top: auto; z-index: auto; }
+/* Column wrappers own desktop spacing; mobile uses an explicit reading order. */
+.left-column, .right-column { display: flex; flex-direction: column; min-width: 0; gap: 24px; }
+.left-column > *, .right-column > * { grid-column: auto; grid-row: auto; width: 100%; }
+.left-column > .meter, .right-column > .calendar { margin: 0; }
 .right-column > .open-column { padding-top: 0; }
-@media (max-width: 720px) {
-  .app { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
-  .left-column,
-  .right-column { display: contents; }
-  .head { grid-column: 1; grid-row: 1; }
-  .calendar { grid-column: 1; grid-row: 2; margin: 30px 0; }
-  .meter { grid-column: 1; grid-row: 3; }
-  .closed-column { grid-column: 1; grid-row: 4; }
-  .open-column { grid-column: 1; grid-row: 5; padding-top: 0; }
+.head-row { align-items: center; margin-bottom: 16px; }
+.head-row h1 { margin: 0; letter-spacing: -.04em; }
+.lede { line-height: 1.7; }
+.meter { padding-top: 18px; }
+.col h2 { margin-bottom: 20px; padding-bottom: 14px; }
+.item { flex-wrap: wrap; gap: 10px; }
+.txt { flex-basis: 160px; line-height: 1.5; }
+.item .btn { white-space: nowrap; padding: 7px 10px; }
+.empty { padding: 16px 20px; border-radius: 10px; }
+.capture { flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.capture > input { flex: 1 0 100%; padding: 10px 14px; }
+.capture > .btn.primary { margin-left: auto; min-width: 72px; }
+.timer-entry, .timer-control { display: flex; align-items: center; gap: 8px; }
+.timer-entry { flex-wrap: wrap; }
+.deadline-picker { white-space: nowrap; }
+.calendar { padding: 20px 24px; }
+.calendar-head { margin-bottom: 16px; }
+.calendar-count { flex-shrink: 0; }
+.calendar-grid { gap: 7px; }
+.date-grid { grid-auto-rows: auto; }
+.day, .calendar-spacer { aspect-ratio: auto; height: clamp(37px, 3vw, 43px); }
+.calendar-legend { margin-top: 12px; }
+.calendar-prompt { margin: 0 0 16px; color: var(--open); font-size: .88rem; }
+.day.picking { border-color: var(--teal); }
+@media (max-width: 1000px) {
+  .app { column-gap: 32px; padding-inline: 28px; }
+  .calendar { padding: 20px; }
+  .item .txt { flex-basis: 100%; }
+}
+@media (max-width: 760px) {
+  .app { display: flex; flex-direction: column; gap: 24px; padding: 28px 20px 56px; }
+  .left-column, .right-column { display: contents; }
+  .head { order: 0; }
+  .meter { order: 1; margin: 0; }
+  .closed-column { order: 2; }
+  .calendar { order: 3; margin: 0; }
+  .open-column { order: 4; padding-top: 0; }
+  .head h1 { font-size: 2.5rem; }
+  .day, .calendar-spacer { height: clamp(37px, 9vw, 45px); }
+}
+/* Slightly zoom out the complete desktop dashboard. */
+@media (min-width: 761px) {
+  .app { zoom: .92; }
 }
 
-/* Let the stacked columns size naturally instead of honoring the old grid row numbers. */
-.left-column,
-.right-column {
-  display: flex;
-  flex-direction: column;
+/* Keep ten Open tasks visible; remaining tasks scroll inside the list. */
+.open-tasks { position: relative; padding: 2px !important; }
+.open-tasks.scrollable {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
 }
-.left-column { gap: 36px; }
-.right-column { gap: 32px; }
-.left-column > .meter { margin: 0; }
-.left-column > .closed-column { margin-top: 0; }
-@media (max-width: 720px) {
-  .left-column,
-  .right-column { display: contents; }
+/* Compact capture row and clearer task hierarchy. */
+.capture { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; }
+.capture > input { width: 100%; }
+.capture > .btn.primary { margin-left: 0; }
+.capture .timer-entry { flex-wrap: nowrap; }
+.task-count { color: var(--muted); font-size: .8rem; font-weight: 400; margin-left: auto; padding: 2px 8px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.item .timer-control .btn { border-color: transparent; color: var(--muted); }
+.item .timer-control .btn:hover { border-color: var(--line); color: var(--ink); background: color-mix(in srgb, var(--line) 25%, transparent); }
+.item > .btn.ghost { opacity: .8; }
+.item > .btn.ghost:hover, .item > .btn.ghost:focus-visible { opacity: 1; }
+.scroll-hint { margin: 10px 2px 0; color: var(--muted); font-size: .78rem; text-align: right; }
+@media (max-width: 420px) {
+  .capture { grid-template-columns: minmax(0, 1fr) auto; }
+  .capture > input { grid-column: 1 / -1; }
 }
+/* Deadline urgency belongs to the task's left edge, not its badge. */
+.countdown { color: var(--muted); background: color-mix(in srgb, var(--line) 45%, var(--surface)); }
+.col .item.deadline-soon { border-left-color: #939b63; }
+.col .item.deadline-urgent { border-left-color: #ce4a58; }
+:root[data-theme="dark"] .col .item.deadline-soon { border-left-color: #b5be83; }
+:root[data-theme="dark"] .col .item.deadline-urgent { border-left-color: #f07480; }
+/* Glow follows only the colored left edge; card surfaces stay neutral. */
+.col .item.deadline-soon,
+.col .item.deadline-urgent { position: relative; }
+.col .item.deadline-soon::before,
+.col .item.deadline-urgent::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: -8px;
+  top: 6px;
+  bottom: 6px;
+  width: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--deadline-glow));
+  filter: blur(3px);
+  opacity: .65;
+}
+.col .item.deadline-soon { --deadline-glow: #a6b786; border-left-width: 3px; }
+.col .item.deadline-soon::before { opacity: .25; width: 7px; left: -6px; filter: blur(2px); }
+.col .item.deadline-urgent { --deadline-glow: #ff304b; border-left: 4px solid #e5253e; }
+:root[data-theme="dark"] .col .item.deadline-urgent { border-left-color: #ff4058; }
+/* Reserve the deadline line so timer changes never resize a task row. */
+.item .txt { min-height: 50px; }
+.item .txt:not(.has-timer) { display: flex; align-items: center; }
 
-/* Hard reset legacy grid placement inside the new column wrappers. */
-.left-column { display: flex !important; flex-direction: column; gap: 28px !important; }
-.right-column { display: flex !important; flex-direction: column; gap: 32px !important; }
-.left-column > *,
-.right-column > * { grid-column: auto !important; grid-row: auto !important; }
-.left-column > .meter { margin: 0 !important; }
-.left-column > .closed-column { position: static !important; margin: 0 !important; }
-.right-column > .calendar { margin: 0 !important; }
-.right-column > .open-column { padding-top: 0 !important; }
-@media (max-width: 720px) {
-  .left-column, .right-column { display: contents !important; }
+.date-tooltip {
+  position: fixed;
+  z-index: 100;
+  width: min(300px, calc(100vw - 24px));
+  max-height: 45vh;
+  overflow-y: auto;
+  pointer-events: none;
+  padding: 14px 16px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+  font-size: .88rem;
+  line-height: 1.5;
 }
+.date-tooltip strong { color: var(--open); }
+.date-tooltip ul { margin: 8px 0 0; padding-left: 18px; }
+.date-tooltip li + li { margin-top: 6px; }
+.date-tooltip li { overflow-wrap: anywhere; }
+.date-tooltip p { margin: 6px 0 0; color: var(--muted); }
+.col .item.deadline-urgent::before { opacity: .95; }
 
-/* Match the right panels to the full column width. */
-.right-column > .calendar,
-.right-column > .open-column {
-  align-self: stretch;
-  width: 100%;
-}
+.date-dots { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 3px; }
+.day .date-dots i { position: static; display: block; width: 4px; height: 4px; }
