@@ -198,7 +198,7 @@ export default function App() {
     const d = new Date(item.dueAt);
     return Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86_400_000);
   };
-  const countdownLabel = (item) => countdown(item) < 0 ? "Overdue " + Math.abs(countdown(item)) + "d" : countdown(item) === 0 ? "Due today" : countdown(item) + " days left";
+  const countdownLabel = (item) => countdown(item) < 0 ? "Overdue " + Math.abs(countdown(item)) + "d" : countdown(item) === 0 ? "Due today" : countdown(item) + (countdown(item) === 1 ? " day left" : " days left");
   const capture = (e) => {
     e.preventDefault(); const t = text.trim(); if (!t) return;
     setState((s) => ({ ...s, open: [{ id: uid(), text: t, dueAt: newDueAt }, ...s.open] }));
