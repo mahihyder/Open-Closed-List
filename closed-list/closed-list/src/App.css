@@ -454,6 +454,6 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 .about-copy p { margin: 0 0 12px; }
 
 /* Bring the app icon into the page's identity. */
-.head h1.brand { display: flex; align-items: center; gap: 16px; min-width: 0; }
-.brand-mark { display: block; width: 52px; height: 52px; flex: 0 0 52px; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,.12); }
+.head h1.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.brand-mark { display: block; width: 48px; height: 48px; flex: 0 0 48px; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,.12); }
 @media (max-width: 420px) { .head h1.brand { font-size: 2rem; gap: 9px; } .brand-mark { width: 36px; height: 36px; flex-basis: 36px; } }
