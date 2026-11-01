@@ -452,3 +452,8 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
 .about-copy h2 { font-size: 1.15rem; color: var(--ink); }
 .about-copy h3 { font-size: 1rem; color: var(--ink); margin: 22px 0 6px; }
 .about-copy p { margin: 0 0 12px; }
+
+/* Bring the app icon into the page's identity. */
+.head h1.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-mark { display: block; width: 44px; height: 44px; flex: 0 0 44px; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,.12); }
+@media (max-width: 420px) { .head h1.brand { font-size: 2rem; gap: 9px; } .brand-mark { width: 36px; height: 36px; flex-basis: 36px; } }
