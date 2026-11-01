@@ -444,3 +444,11 @@ input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px co
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 @media (prefers-reduced-motion: reduce) { .undo-toast { animation: none; } }
+/* A compact public explanation, available without running JavaScript. */
+.site-about { max-width: 1120px; margin: 0 auto 40px; padding: 0 32px; color: var(--muted); font-size: .85rem; }
+.site-about details { border-top: 1px solid var(--line); padding-top: 18px; }
+.site-about summary { cursor: pointer; }
+.about-copy { max-width: 76ch; padding-top: 16px; line-height: 1.7; }
+.about-copy h2 { font-size: 1.15rem; color: var(--ink); }
+.about-copy h3 { font-size: 1rem; color: var(--ink); margin: 22px 0 6px; }
+.about-copy p { margin: 0 0 12px; }

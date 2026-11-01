@@ -3,13 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>InProgress</title>
+    <title>InProgress — Simple To-Do List with Calendar &amp; Deadlines</title>
+    <meta name="description" content="Focus on five tasks at a time with InProgress, a free online to-do list with a 30-day calendar, deadlines, drag-to-reorder tasks, and light and dark themes." />
+    <link rel="canonical" href="https://closed-list.vercel.app/" />
+    <meta name="theme-color" content="#0f171e" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="InProgress" />
+    <meta property="og:title" content="InProgress — Simple To-Do List with Calendar &amp; Deadlines" />
+    <meta property="og:description" content="A calmer way to plan: capture everything, focus on five tasks, and see your deadlines on a 30-day calendar." />
+    <meta property="og:url" content="https://closed-list.vercel.app/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="InProgress — Simple To-Do List" />
+    <meta name="twitter:description" content="Focus on five tasks at a time with a free task planner, calendar, and deadlines." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "InProgress",
+        "url": "https://closed-list.vercel.app/",
+        "description": "A free online to-do list with a five-task focus limit, 30-day calendar, and deadlines.",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Any with a modern web browser",
+        "browserRequirements": "Requires JavaScript",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "featureList": ["Open and closed task lists", "Five active tasks", "30-day deadline calendar", "Task reordering", "Light and dark themes"]
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>
+    <footer class="site-about">
+      <details>
+        <summary>About InProgress — a simple online to-do list</summary>
+        <div class="about-copy">
+          <h2>Focus on five tasks, keep everything else in sight</h2>
+          <p>InProgress is a free online task planner for everyday work, study, and personal projects. Capture what you want to do in your Open list, then commit to up to five tasks in your Closed list. Finish a task or return it to Open before taking on another.</p>
+          <h3>Plan deadlines with a 30-day calendar</h3>
+          <p>Choose a date to set a deadline, see how many days remain, and hover over calendar dates to view the tasks due. Task colors help you spot approaching and overdue deadlines.</p>
+          <h3>Keep your task list simple</h3>
+          <p>Drag tasks to reorder them within their priority group, double-click to edit a title, and use Undo after finishing or removing a task. Switch between light and dark themes to suit your workspace.</p>
+          <h3>Do I need an account?</h3>
+          <p>No account is required. Tasks are saved in this browser on this device. They do not sync between devices, and clearing browser storage can remove them.</p>
+        </div>
+      </details>
+    </footer>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
