@@ -10,6 +10,26 @@ const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) ?? EMPTY
 export default function App() {
   const [state, setState] = useState(load);
   const [text, setText] = useState("");
+  const [backupStatus, setBackupStatus] = useState("");
+  const exportBackup = () => {
+    const blob = new Blob([JSON.stringify({ version: 1, state, theme }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a"); link.href = url; link.download = "inprogress-backup.json"; link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setBackupStatus("Backup downloaded.");
+  };
+  const importBackup = async (event) => {
+    const file = event.target.files[0]; if (!file) return;
+    try {
+      const backup = JSON.parse(await file.text());
+      const validTask = (task) => task && typeof task.id === "string" && typeof task.text === "string" && (!task.dueAt || !Number.isNaN(Date.parse(task.dueAt)));
+      if (backup.version !== 1 || !backup.state || !Array.isArray(backup.state.open) || !Array.isArray(backup.state.closed) || backup.state.closed.length > 5 || ![...backup.state.open, ...backup.state.closed].every(validTask) || !Number.isInteger(backup.state.done) || backup.state.done < 0) throw new Error("Invalid backup");
+      setState(backup.state);
+      if (["light", "dark"].includes(backup.theme)) setTheme(backup.theme);
+      setBackupStatus("Tasks and theme restored from backup.");
+    } catch { setBackupStatus("This file is not a valid InProgress backup."); }
+    event.target.value = "";
+  };
   const [undoAction, setUndoAction] = useState(null);
   const [editing, setEditing] = useState(null);
   const [editText, setEditText] = useState("");
@@ -291,6 +311,7 @@ export default function App() {
       <section className="col open-column" aria-labelledby="open-h"><h2 id="open-h">Open list <span className="task-count">{open.length}</span></h2><form onSubmit={capture} className="capture"><input value={text} onChange={(e) => setText(e.target.value)} placeholder="Write any task" aria-label="Capture a task" /><div className="timer-entry"><button type="button" className="btn deadline-picker" aria-expanded={deadlineTarget?.type === "new"} onClick={() => setDeadlineTarget((current) => current?.type === "new" ? null : { type: "new" })}>{formatDeadline(newDueAt)}</button>{newDueAt && <button type="button" className="btn ghost" onClick={() => setNewDueAt(null)} aria-label="Clear new task deadline">Clear</button>}</div><button className="btn primary" type="submit">Add</button></form>{open.length === 0 ? <p className="empty">Empty. Capture what's on your mind.</p> : <ul ref={openListRef} className={open.length > 10 ? "open-tasks scrollable" : "open-tasks"} style={open.length <= 10 ? { maxHeight: "none" } : undefined} tabIndex={open.length > 10 ? 0 : undefined} aria-label="Open tasks" aria-describedby={open.length > 10 ? "open-scroll-hint" : undefined}>{taskItems(open, "open")}</ul>}{open.length > 10 && <p id="open-scroll-hint" className="scroll-hint">Scroll for more · {open.length} tasks</p>}</section>
     </div>
   </main>
+    <section className="backup-controls" aria-label="Task backups"><button className="btn ghost" onClick={exportBackup}>Export backup</button><label className="btn ghost">Import backup<input type="file" accept="application/json,.json" onChange={importBackup} /></label><span role="status">{backupStatus}</span><small>Import replaces this browser's current tasks. Export first to keep a copy.</small></section>
     {undoAction && <div className="undo-toast" role="status"><span>{undoAction.message}</span><button className="btn" onClick={undoLastAction}>Undo</button><button className="btn ghost" aria-label="Dismiss notification" onClick={() => setUndoAction(null)}>×</button></div>}
     {dateHover && dateHoverReady && <div ref={tooltipRef} id="date-tasks-tooltip" className="date-tooltip" role="tooltip" style={{ left: 0, top: 0 }}>
 
