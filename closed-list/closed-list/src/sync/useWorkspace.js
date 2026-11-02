@@ -37,11 +37,12 @@ export function useWorkspace() {
   }, []);
   useEffect(() => {
     let stopSnapshot = () => {}, disposed = false;
+    const connectionTimeout = window.setTimeout(() => { if (!disposed && !session.current) setError('Sign-in is taking longer than expected. Reload this page to reconnect. Your browser tasks are safe.'); }, 20000);
     redirectResult.catch(() => { if (!disposed) setError('Google sign-in could not finish. Please try again.'); });
     const stopAuth = onAuthStateChanged(auth, (nextUser) => {
       stopSnapshot();
       const s = { uid: nextUser?.uid || null, ready: !nextUser, pending: [], base: { workspace: emptyWorkspace(), revision: 0, applied: [] }, saving: false };
-      session.current = s; setUser(nextUser); setError('');
+      window.clearTimeout(connectionTimeout); session.current = s; setUser(nextUser); setError('');
       if (!nextUser) {
         show(normalizeWorkspace(read(GUEST_KEY, emptyWorkspace()))); setStatus('guest'); setGuestAvailable(false); return;
       }
@@ -89,7 +90,7 @@ export function useWorkspace() {
     const offline = () => { if (session.current?.uid) setStatus('offline'); };
     window.addEventListener('online', retry); window.addEventListener('offline', offline);
     const timer = window.setInterval(retry, 15000);
-    return () => { disposed = true; stopAuth(); stopSnapshot(); session.current = null; window.clearInterval(timer); window.removeEventListener('online', retry); window.removeEventListener('offline', offline); };
+    return () => { disposed = true; window.clearTimeout(connectionTimeout); stopAuth(); stopSnapshot(); session.current = null; window.clearInterval(timer); window.removeEventListener('online', retry); window.removeEventListener('offline', offline); };
   }, []);
   const login = async (sameTab = window.location.hostname === 'inprogress-planner.vercel.app') => {
     if (busy) return;
