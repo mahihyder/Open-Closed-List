@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { auth, db, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, doc, onSnapshot, runTransaction, serverTimestamp } from './firebase';
+import { auth, db, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, redirectResult, signOut, doc, onSnapshot, runTransaction, serverTimestamp } from './firebase';
 import { normalizeWorkspace, emptyWorkspace, workspaceChange, applyWorkspaceChange, mergeGuestWorkspace } from './workspace';
 const GUEST_KEY = 'closed-list:v1';
 const read = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
@@ -11,6 +11,7 @@ export function useWorkspace() {
   const [status, setStatus] = useState('connecting');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [popupBlocked, setPopupBlocked] = useState(false);
   const [guestAvailable, setGuestAvailable] = useState(false);
   const current = useRef(workspace), session = useRef(null), flushRef = useRef(() => {});
   const persist = (s) => {
@@ -36,6 +37,7 @@ export function useWorkspace() {
   }, []);
   useEffect(() => {
     let stopSnapshot = () => {}, disposed = false;
+    redirectResult.catch(() => { if (!disposed) setError('Google sign-in could not finish. Please try again.'); });
     const stopAuth = onAuthStateChanged(auth, (nextUser) => {
       stopSnapshot();
       const s = { uid: nextUser?.uid || null, ready: !nextUser, pending: [], base: { workspace: emptyWorkspace(), revision: 0, applied: [] }, saving: false };
@@ -89,11 +91,23 @@ export function useWorkspace() {
     const timer = window.setInterval(retry, 15000);
     return () => { disposed = true; stopAuth(); stopSnapshot(); session.current = null; window.clearInterval(timer); window.removeEventListener('online', retry); window.removeEventListener('offline', offline); };
   }, []);
-  const login = async () => {
+  const login = async (sameTab = window.location.hostname === 'inprogress-planner.vercel.app') => {
+    if (busy) return;
     setBusy(true); setError('');
-    try { const provider = new GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); await signInWithPopup(auth, provider); }
-    catch (e) { if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') setError(e.code === 'auth/popup-blocked' ? 'Allow the Google sign-in popup, then try again.' : 'Google sign-in could not finish. Please try again.'); }
-    finally { setBusy(false); }
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    try {
+      if (sameTab === true) { await signInWithRedirect(auth, provider); return; }
+      await signInWithPopup(auth, provider);
+      setPopupBlocked(false);
+    } catch (e) {
+      if (e.code === 'auth/popup-blocked') {
+        setPopupBlocked(true);
+        setError('The sign-in popup was blocked. Continue in this tab instead.');
+      } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+        setError('Google sign-in could not finish. Please try again.');
+      }
+    } finally { setBusy(false); }
   };
   const logout = async () => {
     if (session.current?.pending.length || session.current?.saving) { setError('Wait for your changes to sync before signing out.'); return; }
@@ -106,5 +120,5 @@ export function useWorkspace() {
     setWorkspace(value => mergeGuestWorkspace(value, normalizeWorkspace(read(GUEST_KEY, emptyWorkspace()))));
     save(`inprogress:imported:${s.uid}`, true); setGuestAvailable(false);
   };
-  return { workspace, setWorkspace, user, status, error, busy, login, logout, importGuest, guestAvailable, retry: () => { if (!session.current?.ready) window.location.reload(); else flushRef.current(); }, ready: status !== 'connecting' && (!user || !!session.current?.ready) };
+  return { workspace, setWorkspace, user, status, error, busy, popupBlocked, login, logout, importGuest, guestAvailable, retry: () => { if (!session.current?.ready) window.location.reload(); else flushRef.current(); }, ready: status !== 'connecting' && (!user || !!session.current?.ready) };
 }
