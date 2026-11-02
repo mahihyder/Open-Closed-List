@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /workspaces/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['workspace', 'revision', 'applied', 'updatedAt'])
+        && request.resource.data.workspace is map
+        && request.resource.data.workspace.keys().hasOnly(['open', 'closed', 'completed', 'done'])
+        && request.resource.data.workspace.open is list
+        && request.resource.data.workspace.closed is list
+        && request.resource.data.workspace.closed.size() <= 5
+        && request.resource.data.workspace.completed is list
+        && request.resource.data.workspace.done is int
+        && request.resource.data.workspace.done >= 0
+        && request.resource.data.revision is int
+        && request.resource.data.revision > 0
+        && request.resource.data.applied is list
+        && request.resource.data.applied.size() <= 256
+        && request.resource.data.updatedAt == request.time;
+    }
+  }
+}

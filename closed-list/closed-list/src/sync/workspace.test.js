@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {emptyWorkspace as empty,workspaceChange as diff,applyWorkspaceChange as apply,mergeGuestWorkspace as merge,normalizeWorkspace} from './workspace.js';
+const task=(id,text=id)=>({id,text});
+test('concurrent additions survive',()=>{const a=empty(),b={...empty(),open:[task('a')]},c={...empty(),open:[task('b')]};assert.deepEqual(new Set(apply(b,diff(a,c,'2')).open.map(t=>t.id)),new Set(['a','b']));});
+test('independent edits merge fields',()=>{const a={...empty(),open:[task('a')]};const b={...a,open:[{...task('a'),text:'edited'}]};const c={...a,open:[{...task('a'),dueAt:'2026-11-03'}]};assert.deepEqual(apply(b,diff(a,c,'2')).open[0],{id:'a',text:'edited',dueAt:'2026-11-03'});});
+test('stale edits cannot resurrect deleted tasks',()=>{const a={...empty(),open:[task('a')]},b={...a,open:[task('a','edited')]};assert.equal(apply(empty(),diff(a,b,'2')).open.length,0);});
+test('concurrent commitments never exceed five',()=>{const a={...empty(),open:[task('x'),task('y')],closed:['1','2','3','4'].map(x=>task(x))};const b={...a,open:[task('y')],closed:[...a.closed,task('x')]};const c={...a,open:[task('x')],closed:[...a.closed,task('y')]};const result=apply(b,diff(a,c,'2'));assert.equal(result.closed.length,5);assert.equal(result.open.length,1);assert.equal(new Set([...result.closed,...result.open].map(t=>t.id)).size,6);});
+test('concurrent finish counted once',()=>{const a={...empty(),closed:[task('a')]};const b={...empty(),completed:[{...task('a'),completedAt:'now'}],done:1};assert.equal(apply(b,diff(a,b,'2')).done,1);});
+test('guest import keeps cloud tasks and deduplicates repeats',()=>{const a={...empty(),open:[task('a','same')],done:4};const b={...empty(),open:[task('b','same'),task('c','new')],done:2};const result=merge(a,b);assert.equal(result.open.length,2);assert.equal(result.done,4);assert.deepEqual(merge(result,b),result);});
+test('malformed history does not crash migration',()=>assert.deepEqual(normalizeWorkspace({open:[],closed:[],completed:{},done:-1}),empty()));

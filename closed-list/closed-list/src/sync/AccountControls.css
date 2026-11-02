@@ -1,0 +1,20 @@
+.account-controls { margin: 0 8px 22px; padding-bottom: 20px; border-bottom: 1px solid var(--line); font-size: .78rem; }
+.account-invite { color: var(--ink); margin: 0 0 12px; }
+.google-signin { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 10px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.google-signin svg { width: 18px; height: 18px; flex-shrink: 0; }
+.account-controls button:disabled { opacity: .5; cursor: wait; }
+.account-hint, .guest-import p { margin: 10px 0 0; color: var(--muted); line-height: 1.6; font-size: .72rem; }
+.account-identity { display:flex; align-items:center; gap:9px; }
+.account-avatar { background: color-mix(in srgb,var(--teal) 15%,var(--surface)); color: var(--open); width:30px; height:30px; border-radius:50%; display:grid; place-items:center; flex-shrink:0; }
+.account-identity > div { min-width:0; }
+.account-identity strong { display:block; font-size:.8rem; font-weight:500; overflow-wrap:anywhere; }
+.account-identity small { display:block; color:var(--muted); font-size:.66rem; overflow-wrap:anywhere; }
+.sync-status { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:.7rem; margin:10px 0; }
+.sync-status i { width:5px; height:5px; border-radius:50%; background:var(--amber); }
+.sync-status i.is-synced { background:var(--open); }
+.account-signout { color:var(--muted); background:none; border:0; padding:4px 0; font:inherit; font-size:.72rem; cursor:pointer; }
+.guest-import { margin:12px 0; padding:10px; border:1px solid var(--line); border-radius:7px; }
+.guest-import p { margin:0 0 8px; }
+.guest-import button, .account-error button { font:inherit; font-size:.7rem; color:var(--open); border:0; background:transparent; padding:3px 0; text-align:left; cursor:pointer; }
+.account-error { color:var(--muted); margin-top:12px; font-size:.72rem; line-height:1.5; }
+.workspace-loading { position:fixed; z-index:80; top:14px; left:50%; transform:translateX(-50%); padding:8px 14px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--muted); font-size:.8rem; }

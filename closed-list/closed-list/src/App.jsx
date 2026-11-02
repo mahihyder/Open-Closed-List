@@ -1,19 +1,22 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import "./App.css";
+import SidePanel from "./SidePanel.jsx";
+import { useWorkspace } from "./sync/useWorkspace";
 
 const LIMIT = 5;
-const KEY = "closed-list:v1";
-const EMPTY = { open: [], closed: [], done: 0 };
+
+
 const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
-const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) ?? EMPTY; } catch { return EMPTY; } };
 
 export default function App() {
-  const [state, setState] = useState(load);
+  const cloud = useWorkspace();
+  const { workspace: state, setWorkspace: setState } = cloud;
   const [text, setText] = useState("");
   const [undoAction, setUndoAction] = useState(null);
   const [editing, setEditing] = useState(null);
   const [editText, setEditText] = useState("");
   const cancelEdit = useRef(false);
+  useEffect(() => { setUndoAction(null); setEditing(null); setText(""); setDeadlineTarget(null); setNewDueAt(null); }, [cloud.user?.uid]);
   const [newDueAt, setNewDueAt] = useState(null);
   const [deadlineTarget, setDeadlineTarget] = useState(null);
   const [today, setToday] = useState(() => new Date());
@@ -179,7 +182,6 @@ export default function App() {
   }, [open[0]?.id]);
 
   useEffect(() => { document.documentElement.dataset.theme = theme; try { localStorage.setItem("closed-list:theme", theme); } catch { /* storage unavailable */ } }, [theme]);
-  useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* storage unavailable */ } }, [state]);
   useEffect(() => { const timer = window.setInterval(() => setToday(new Date()), 60_000); return () => window.clearInterval(timer); }, []);
 
   const dayKey = (date) => date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
@@ -217,7 +219,8 @@ export default function App() {
     const index = state.closed.findIndex((task) => task.id === id);
     if (index < 0) return;
     setUndoAction({ type: "finish", list: "closed", task: state.closed[index], index, message: "Task finished" });
-    setState((s) => ({ ...s, closed: s.closed.filter((task) => task.id !== id), done: s.done + 1 }));
+    const entry = { ...state.closed[index], completedAt: new Date().toISOString(), completionId: uid() };
+    setState((s) => ({ ...s, closed: s.closed.filter((task) => task.id !== id), done: s.done + 1, completed: [entry, ...(s.completed || [])] }));
   };
   const letGo = (list, id) => {
     const index = state[list].findIndex((task) => task.id === id);
@@ -235,7 +238,17 @@ export default function App() {
       const closedRows = s.closed.filter((task) => task.id !== currentTask.id);
       const destination = action.list === "closed" && closedRows.length >= LIMIT ? openRows : action.list === "closed" ? closedRows : openRows;
       destination.splice(Math.min(action.index, destination.length), 0, currentTask);
-      return { ...s, open: openRows, closed: closedRows, done: action.type === "finish" ? Math.max(0, s.done - 1) : s.done };
+      return { ...s, open: openRows, closed: closedRows, done: action.type === "finish" ? Math.max(0, s.done - 1) : s.done, completed: action.type === "finish" ? (s.completed || []).filter((task) => task.id !== action.task.id) : (s.completed || []) };
+    });
+    setUndoAction(null);
+  };
+  const restoreCompleted = (completionId) => {
+    setState((s) => {
+      const entry = (s.completed || []).find((task) => task.completionId === completionId);
+      if (!entry) return s;
+      const { completedAt, completionId: archivedId, ...task } = entry;
+      const exists = [...s.open, ...s.closed].some((item) => item.id === task.id);
+      return { ...s, open: exists ? s.open : [task, ...s.open], completed: s.completed.filter((item) => item.completionId !== completionId), done: Math.max(0, s.done - 1) };
     });
     setUndoAction(null);
   };
@@ -280,9 +293,9 @@ export default function App() {
     <button className="btn ghost" onClick={() => letGo(type, item.id)} title={type === "closed" ? "Return to Open list" : "Remove task"} aria-label={"Let go of " + item.text}>Let go</button>
   </li></Fragment>);
 
-  return <><main className="app">
+  return <><SidePanel state={state} theme={theme} setTheme={setTheme} onRestore={restoreCompleted} cloud={cloud} />{!cloud.ready && <div className="workspace-loading" role="status">Connecting your workspace…</div>}<main className="app" inert={!cloud.ready ? "" : undefined} aria-busy={!cloud.ready}>
     <div className="left-column">
-      <header className="head"><div className="head-row"><h1 className="brand"><img className="brand-mark" src="/favicon.svg" width="44" height="44" alt="" /> <span>InProgress</span></h1><button className="btn theme-toggle" type="button" onClick={() => setTheme((current) => current === "light" ? "dark" : "light")} aria-label={"Switch to " + (theme === "light" ? "dark" : "light") + " theme"} title={"Switch to " + (theme === "light" ? "dark" : "light") + " theme"}>{theme === "light" ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13A8.5 8.5 0 0 1 11 3.1 8.5 8.5 0 1 0 20.9 13Z" /></svg> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" /></svg>}</button></div><p className="lede">Everything you wish to do goes on the open list. Only five things get to be on the closed list, and nothing new gets in until something leaves.</p></header>
+      <header className="head"><div className="head-row"><h1 className="brand"><img className="brand-mark" src={theme === "light" ? "/logo-light.svg" : "/favicon.svg"} width="44" height="44" alt="" /> <span>InProgress</span></h1><button className="btn theme-toggle" type="button" onClick={() => setTheme((current) => current === "light" ? "dark" : "light")} aria-label={"Switch to " + (theme === "light" ? "dark" : "light") + " theme"} title={"Switch to " + (theme === "light" ? "dark" : "light") + " theme"}>{theme === "light" ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13A8.5 8.5 0 0 1 11 3.1 8.5 8.5 0 1 0 20.9 13Z" /></svg> : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" /></svg>}</button></div><p className="lede">Everything you wish to do goes on the open list. Only five things get to be on the closed list, and nothing new gets in until something leaves.</p></header>
       <section className="meter" aria-label={closed.length + " of " + LIMIT + " slots used"}><div className="slots" aria-hidden="true">{Array.from({ length: LIMIT }, (_, i) => <span key={i} className={i < closed.length ? "slot on" : "slot"} />)}</div><p className={full ? "status full" : "status"} role="status">{full ? "Closed list is full. Finish or let go of something to make room." : LIMIT - closed.length + " of " + LIMIT + " slots free."}</p></section>
       <section className="col closed-column" aria-labelledby="closed-h"><h2 id="closed-h">Closed list</h2>{closed.length === 0 ? <p className="empty">Nothing committed. Pick from the open list.</p> : <ul>{taskItems(closed, "closed")}</ul>}</section>
     </div>
