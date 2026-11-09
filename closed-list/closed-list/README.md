@@ -12,3 +12,11 @@ npm run dev
 ```
 
 Change `LIMIT` in `src/App.jsx` to resize the closed list. Data is stored in localStorage.
+
+## Excluding your visits from analytics
+
+Open `https://inprogress-planner.vercel.app/?analytics=off` in each browser you use.
+This saves a browser-local preference and excludes the activation visit and future
+Web Analytics events. Other visitors are unaffected. Clearing site storage or using
+another browser/profile requires activating the link again. Historical counts
+cannot be changed. Open `?analytics=on` to include this browser again.
